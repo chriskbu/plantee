@@ -16,20 +16,20 @@ int moist_offset = 0;
 void setup() {
   // declare the ledPin as an OUTPUT:
   Serial.begin(115200);
-  Serial.println("---SUPER GARDENER---");
+  Serial.println("        |---SUPER GARDENER---|");
   Serial.println("Libraries used: DHT");
   Serial.println("Garderner Version: v1.0");
-  Serial.println("Status,\t\tHumidity (%),\t\tTemperature (C),\t\tMoistness");
+  Serial.println("Status        Humidity (%)        Temperature (C)        Moistness");
   pinMode(ledPin, OUTPUT);
 }
 
 void printReadingsToSerial(){
   // DISPLAY DATA
-  Serial.print("\t\t");
+  Serial.print("        ");
   Serial.print(DHT.humidity, 1);
-  Serial.print("\t\t\t");
+  Serial.print("        ");
   Serial.print(DHT.temperature, 1);
-  Serial.print("\t\t\t\t");
+  Serial.print("        ");
   Serial.println(808-moistSensor_value, DEC);
 }
 
@@ -46,32 +46,32 @@ void checkSensors(){
   int chk = DHT.read11(DHT11_PIN);
   switch(chk){
     case DHTLIB_OK:  
-      Serial.print("OK,\t"); 
+      Serial.print("OK,        "); 
       break;
     case DHTLIB_ERROR_CHECKSUM: 
-      Serial.print("Checksum error,\t"); 
+      Serial.print("Checksum error,        "); 
       break;
     case DHTLIB_ERROR_TIMEOUT: 
-      Serial.print("Time out error,\t"); 
+      Serial.print("Time out error,        "); 
       break;
     case DHTLIB_ERROR_CONNECT:
-      Serial.print("Connect error,\t");
+      Serial.print("Connect error,        ");
       break;
     case DHTLIB_ERROR_ACK_L:
-      Serial.print("Ack Low error,\t");
+      Serial.print("Ack Low error,        ");
       break;
     case DHTLIB_ERROR_ACK_H:
-      Serial.print("Ack High error,\t");
+      Serial.print("Ack High error,        ");
       break;
     default: 
-      Serial.print("Unknown error,\t"); 
+      Serial.print("Unknown error,        "); 
       break;
   } 
 }
 
 void loop() {
   checkSensors();
-  doOffset();l
+  doOffset();
   printReadingsToSerial();
   delay(2000);
 }

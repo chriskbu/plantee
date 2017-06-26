@@ -1,9 +1,17 @@
 
 /*
  * Optimal humidity: 170 - 250
+ * Feels wet : 150
+ * Feels dry : 350
  * Max water : 166
- * Min water : 500
+ * Min water : 350
 */
+
+float offset   = 230;
+float maxWater = 166;
+float minWater = 400;
+
+int seconds_per_poll = 300;
 
 int led1Red     = 3;
 int led2Yellow  = 5;
@@ -12,7 +20,7 @@ int led4Green   = 9;
 int led5Green   = 10;
 int led6Green   = 11;
 
-int fader = 150;
+int fader = 100;
 
 int numLEDs = 0;
 
@@ -21,7 +29,7 @@ int soilSensor = A0;
 int ledList[6] = {0, 1, 2, 3, 4, 5};
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   // Set all Digital Pins as Output for LED's:
   pinMode(led1Red, OUTPUT);
   pinMode(led2Yellow, OUTPUT);
@@ -58,12 +66,14 @@ void setLED(int ledNum, int state){
   }
 }
 
+
+// 300
+// 500
 float getPercentageHumid(int analogData){
-  float fullHumid = 500.0;
-  float offset = 120.0;
-  float percentageHumidity = ((fullHumid-(analogData-offset))/fullHumid) * 100;
+  float inverseData = (minWater-analogData)+offset;
+  float percentageHumidity = (inverseData/minWater)*100;
   return percentageHumidity;
-} 
+}
 
 void setLEDs(int ledList [], int state){
   for(int i = 0; i<numLEDs; i++){
@@ -74,6 +84,13 @@ void setLEDs(int ledList [], int state){
 void cycleLEDs(int currLEDs){
   for(int i = 0; i < currLEDs; i++){
     setLED(i, HIGH);
+    delay(fader);
+  }
+}
+
+void cycleLEDsReverse(int currLEDs){
+  for(int i = currLEDs; 0 < i; i--){
+    setLED(i, LOW);
     delay(fader);
   }
 }
@@ -93,18 +110,21 @@ int numLEDsOn(float percentage){
 }
 
 void loop() {
-  int analogData = analogRead(soilSensor);
+  float analogData = analogRead(soilSensor);
   float percentageHumid = getPercentageHumid(analogData);
   numLEDs = numLEDsOn(percentageHumid);
-  Serial.println(analogData);
-  Serial.println(percentageHumid);
+  Serial.print(analogData);
+  Serial.print(",    ");
+  Serial.print(percentageHumid);
+  Serial.print(",    ");
   Serial.println(numLEDs);
   cycleLEDs(numLEDs);
-  delay(1000);
-  setLEDs(ledList, LOW);
-  delay(500);
-  setLEDs(ledList, HIGH);
-  delay(500);
-  setLEDs(ledList, LOW);
-  delay(500);
+  delay(seconds_per_poll*1000);
+  cycleLEDsReverse(numLEDs);
+  //setLEDs(ledList, LOW);
+  //delay(250);
+  //setLEDs(ledList, HIGH);
+  //delay(250);
+  //setLEDs(ledList, LOW);
+  delay(250);
 }

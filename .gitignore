@@ -4,6 +4,8 @@ sym/
 .ipynb_checkpoints/
 .vscode/
 *.zip
+./frontend-plantee/
+./react-dashboard/
 
 
 
